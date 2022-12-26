@@ -28,21 +28,19 @@ public class Program {
                 line = br.readLine();
             }
 
-            list.stream()
-                    .filter(p -> p.getYear() == 2016)
-                    .sorted(Comparator.comparing(Sale::averagePrice).reversed())
-                    .limit(5)
-                    .collect(Collectors.toList())
-                    .forEach(System.out::println);
-
-            Double sumL = list.stream()
-                    .filter(p -> (p.getSeller().equals("Logan") && p.getMonth() == 1)
-                    || (p.getSeller().equals("Logan") && p.getMonth() == 7))
-                    .map(s -> s.getTotal())
-                    .reduce(0.0, (x, y) -> x + y);
-
-            System.out.println();
-            System.out.println("Valor total vendido pelo vendedor Logan nos meses 1 e 7 = " + sumL);
+            Set<String> names = new HashSet<>();
+            names.addAll(list
+                    .stream()
+                    .map(s -> s.getSeller()).collect(Collectors.toList()));
+            System.out.println("Total de vendas por vendedor: ");
+            for (String name : names) {
+                Double totalSum = list
+                        .stream()
+                        .filter(p -> p.getSeller().equals(name))
+                        .map(Sale::getTotal)
+                        .reduce(0.0, Double::sum);
+                System.out.println(name + " - R$ " + String.format("%.2f",totalSum));
+            }
 
         }catch (FileNotFoundException e){
             System.out.println("Erro: "+ patch + " (O sistema não pode encontrar o arquivo especificado)");
